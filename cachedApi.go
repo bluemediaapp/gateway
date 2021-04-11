@@ -18,7 +18,7 @@ func initCachedApi() {
 	})
 	app.Get("/api/cached/video/:video_id", func(ctx *fiber.Ctx) error {
 		videoId := ctx.Params("video_id")
-		// Validate user id
+		// Validate video id
 		if !validateId(videoId) {
 			return ctx.Status(400).SendString("Invalid video-id.")
 		}
