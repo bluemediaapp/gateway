@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/bluemediaapp/gateway/auth"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"log"
 	"os"
 )
@@ -18,8 +18,12 @@ func main() {
 		mongoUri: os.Getenv("mongo_uri"),
 	}
 
+	// Firmware
+	app.Use(recover.New())
+
+	// Login
 	app.Use(func(ctx *fiber.Ctx) error {
-		userId, err := auth.RequireLogin(ctx)
+		userId, err := RequireLogin(ctx)
 		if err == nil {
 			ctx.Locals("logged-on", true)
 			ctx.Locals("user-id", userId)
@@ -28,6 +32,10 @@ func main() {
 		}
 		return ctx.Next()
 	})
+
+	// Modules
+	initCachedApi()
+	initLiveApi()
 
 	log.Fatal(app.Listen(config.port))
 }

@@ -1,1 +1,1 @@
-go run config.go main.go
+go run config.go auth.go cachedApi.go liveApi.go main.go
