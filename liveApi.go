@@ -8,6 +8,9 @@ func initLiveApi() {
 		if userId == "" {
 			return ctx.Status(403).SendString("Invalid login token")
 		}
-		return forwardHttp(ctx, "http://recommended:5000/user/"+userId)
+		return forwardHttp(ctx, "http://recommended:5000/user/"+userId, nil)
+	})
+	app.Get("/api/live/login", func(ctx *fiber.Ctx) error {
+		return forwardHttp(ctx, "http://users:5000/login", []string{"username", "password"})
 	})
 }

@@ -14,7 +14,7 @@ func initCachedApi() {
 		if !validateId(userId) {
 			return ctx.Status(400).SendString("Invalid user-id.")
 		}
-		return forwardHttp(ctx, "http://data-outlet:5000/user/" + userId)
+		return forwardHttp(ctx, "http://data-outlet:5000/user/" + userId, nil)
 	})
 	app.Get("/api/cached/video/:video_id", func(ctx *fiber.Ctx) error {
 		videoId := ctx.Params("video_id")
@@ -22,7 +22,7 @@ func initCachedApi() {
 		if !validateId(videoId) {
 			return ctx.Status(400).SendString("Invalid video-id.")
 		}
-		return forwardHttp(ctx, "http://data-outlet:5000/video/" +videoId)
+		return forwardHttp(ctx, "http://data-outlet:5000/video/" +videoId, nil)
 	})
 }
 
@@ -31,11 +31,16 @@ func validateId(id string) bool {
 	return err == nil
 }
 
-func forwardHttp(ctx *fiber.Ctx, url string) error {
+func forwardHttp(ctx *fiber.Ctx, url string, includeHeaders []string) error {
 	response, err := http.Get(url)
 	if err != nil {
 		_ = ctx.SendString(fmt.Sprint(err))
 		return err
+	}
+	if includeHeaders != nil {
+		for _, headerName := range includeHeaders {
+			response.Header.Set(headerName, ctx.Get(headerName, ""))
+		}
 	}
 	ctx.Set("Content-Type", response.Header.Get("Content-Type"))
 	ctx.Status(response.StatusCode)
