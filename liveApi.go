@@ -10,7 +10,12 @@ func initLiveApi() {
 		}
 		return forwardHttp(ctx, "http://recommended:5000/user/"+userId, nil)
 	})
+
+	// Users
 	app.Get("/api/live/login", func(ctx *fiber.Ctx) error {
 		return forwardHttp(ctx, "http://users:5000/login", []string{"username", "password"})
+	})
+	app.Get("/api/live/register", func(ctx *fiber.Ctx) error {
+		return forwardHttp(ctx, "http://users:5000/register", []string{"username", "password"})
 	})
 }

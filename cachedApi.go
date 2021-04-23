@@ -16,13 +16,21 @@ func initCachedApi() {
 		}
 		return forwardHttp(ctx, "http://data-outlet:5000/user/" + userId, nil)
 	})
-	app.Get("/api/cached/video/:video_id", func(ctx *fiber.Ctx) error {
+	app.Get("/api/cached/video-info/:video_id", func(ctx *fiber.Ctx) error {
 		videoId := ctx.Params("video_id")
 		// Validate video id
 		if !validateId(videoId) {
 			return ctx.Status(400).SendString("Invalid video-id.")
 		}
 		return forwardHttp(ctx, "http://data-outlet:5000/video/" +videoId, nil)
+	})
+	app.Get("/api/cached/video/:video_id", func(ctx *fiber.Ctx) error {
+		videoId := ctx.Params("video_id")
+		// Validate video id
+		if !validateId(videoId) {
+			return ctx.Status(400).SendString("Invalid video-id.")
+		}
+		return forwardHttp(ctx, "http://cdn:5000/videos/" +videoId, nil)
 	})
 }
 
