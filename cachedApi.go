@@ -1,10 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
 	"strconv"
+)
+
+var (
+	client = &http.Client{}
 )
 
 func initCachedApi() {
@@ -14,7 +17,7 @@ func initCachedApi() {
 		if !validateId(userId) {
 			return ctx.Status(400).SendString("Invalid user-id.")
 		}
-		return forwardHttp(ctx, "http://data-outlet:5000/user/" + userId, nil)
+		return forwardHttp(ctx, "http://data-outlet:5000/user/"+userId, nil)
 	})
 	app.Get("/api/cached/video-info/:video_id", func(ctx *fiber.Ctx) error {
 		videoId := ctx.Params("video_id")
@@ -22,7 +25,7 @@ func initCachedApi() {
 		if !validateId(videoId) {
 			return ctx.Status(400).SendString("Invalid video-id.")
 		}
-		return forwardHttp(ctx, "http://data-outlet:5000/video/" +videoId, nil)
+		return forwardHttp(ctx, "http://data-outlet:5000/video/"+videoId, nil)
 	})
 	app.Get("/api/cached/video/:video_id", func(ctx *fiber.Ctx) error {
 		videoId := ctx.Params("video_id")
@@ -30,7 +33,7 @@ func initCachedApi() {
 		if !validateId(videoId) {
 			return ctx.Status(400).SendString("Invalid video-id.")
 		}
-		return forwardHttp(ctx, "http://cdn:5000/videos/" +videoId, nil)
+		return forwardHttp(ctx, "http://cdn:5000/videos/"+videoId, nil)
 	})
 }
 
@@ -40,15 +43,18 @@ func validateId(id string) bool {
 }
 
 func forwardHttp(ctx *fiber.Ctx, url string, includeHeaders []string) error {
-	response, err := http.Get(url)
+	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		_ = ctx.SendString(fmt.Sprint(err))
 		return err
 	}
 	if includeHeaders != nil {
 		for _, headerName := range includeHeaders {
-			response.Header.Set(headerName, ctx.Get(headerName, ""))
+			request.Header.Set(headerName, ctx.Get(headerName, ""))
 		}
+	}
+	response, err := client.Do(request)
+	if err != nil {
+		return err
 	}
 	ctx.Set("Content-Type", response.Header.Get("Content-Type"))
 	ctx.Status(response.StatusCode)

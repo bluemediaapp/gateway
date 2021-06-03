@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"log"
 	"os"
@@ -20,6 +21,9 @@ func main() {
 
 	// Firmware
 	app.Use(recover.New())
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+	}))
 
 	// Login
 	app.Use(func(ctx *fiber.Ctx) error {
