@@ -37,7 +37,7 @@ func GetUserId(token string) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	userID := user.Header["userID"].(int64)
+	userID := int64(user.Header["userID"].(float64))
 	return userID, nil
 }
 

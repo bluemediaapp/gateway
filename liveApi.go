@@ -1,14 +1,17 @@
 package main
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"fmt"
+	"github.com/gofiber/fiber/v2"
+)
 
 func initLiveApi() {
 	app.Get("/api/live/recommended", func(ctx *fiber.Ctx) error {
-		userId := ctx.Get("user-id", "")
-		if userId == "" {
+		userId := ctx.Locals("user-id")
+		if userId == nil {
 			return ctx.Status(403).SendString("Invalid login token")
 		}
-		return forwardHttp(ctx, "http://recommended:5000/user/"+userId, nil)
+		return forwardHttp(ctx, fmt.Sprintf("http://recommended:5000/user/%d", userId.(int64)), nil)
 	})
 
 	// Users
