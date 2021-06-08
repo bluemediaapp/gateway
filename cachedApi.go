@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
 	"strconv"
@@ -43,7 +44,7 @@ func validateId(id string) bool {
 }
 
 func forwardHttp(ctx *fiber.Ctx, url string, includeHeaders []string) error {
-	request, err := http.NewRequest("GET", url, nil)
+	request, err := http.NewRequest("GET", url, bytes.NewReader(ctx.Body()))
 	if err != nil {
 		return err
 	}
