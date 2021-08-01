@@ -36,7 +36,7 @@ func initCachedApi() {
 		}
 		return forwardHttp(ctx, "http://cdn:5000/videos/"+videoId, nil)
 	})
-	app.Get("/api/cached/user/:user_id", func(ctx *fiber.Ctx) error {
+	app.Get("/api/cached/avatar/:user_id", func(ctx *fiber.Ctx) error {
 		userId := ctx.Params("user_id")
 		if !validateId(userId) {
 			return ctx.Status(400).SendString("Invalid user-id.")
